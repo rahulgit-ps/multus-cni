@@ -4,7 +4,9 @@ language: go
 # for the detail
 # sudo: requried
 dist: bionic
-
+arch:
+  - amd64
+  - arm64
 services:
   - docker
 
@@ -23,7 +25,7 @@ env:
   jobs:
     - TARGET=amd64
     - TARGET=ppc64le
-    - TARGET=arm64
+
 
 before_install:
   - if [ "${REPOSITORY_NAME}" = "" ]; then export REPOSITORY_NAME=multus; fi
