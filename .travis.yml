@@ -57,9 +57,9 @@ script:
       docker build -t nfvperobot/${REPOSITORY_NAME}-origin:latest -f Dockerfile.openshift .
     fi
   - if [ [ "${TARGET}" == "arm64" ] && [ "${TRAVIS_CPU_ARCH}" == "arm64" ] ]; then
-      sudo env PATH=${PATH} ./test.sh
-      goveralls -coverprofile=coverage.out -service=travis-ci
-      docker build -t nfvperobot/${REPOSITORY_NAME}:latest-arm64 -f Dockerfile.arm64 .
+      sudo env PATH=${PATH} ./test.sh;
+      goveralls -coverprofile=coverage.out -service=travis-ci;
+      docker build -t nfvperobot/${REPOSITORY_NAME}:latest-arm64 -f Dockerfile.arm64 .;
     fi
 
 deploy:
