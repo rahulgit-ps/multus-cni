@@ -23,17 +23,9 @@ env:
     - DOCKER_CLI_EXPERIMENTAL="enabled"
     - secure: "${REGISTRY_SECURE}"
   jobs:
-    include:
-      - TARGET=amd64
-      - TARGET=ppc64le
-      - TARGET=arm64
-    exclude:
-      - TARGET=amd64
-        arch: arm64
-      - TARGET=ppc64le
-        arch: arm64
-      - TARGET=arm64
-        arch: amd64
+    - TARGET=amd64
+    - TARGET=ppc64le
+    - TARGET=arm64
         
     
 
@@ -57,14 +49,16 @@ before_script:
 script:
   - GOARCH="${TARGET}" ./build
   - |
-    if [ "${TARGET}" == "amd64" ]; then
+    if [ [ "${TARGET}" == "amd64" ] && [ "${TRAVIS_CPU_ARCH}" == "amd64" ] ]; then
       sudo env PATH=${PATH} ./test.sh
       goveralls -coverprofile=coverage.out -service=travis-ci
       docker build -t nfvperobot/${REPOSITORY_NAME}:latest-amd64 .
       docker build -t nfvperobot/${REPOSITORY_NAME}:latest-ppc64le -f Dockerfile.ppc64le .
       docker build -t nfvperobot/${REPOSITORY_NAME}-origin:latest -f Dockerfile.openshift .
     fi
-  - if [ "${TARGET}" == "arm64" ]; then
+  - if [ [ "${TARGET}" == "arm64" ] && [ "${TRAVIS_CPU_ARCH}" == "arm64" ] ]; then
+      sudo env PATH=${PATH} ./test.sh
+      goveralls -coverprofile=coverage.out -service=travis-ci
       docker build -t nfvperobot/${REPOSITORY_NAME}:latest-arm64 -f Dockerfile.arm64 .
     fi
 
