@@ -23,7 +23,7 @@ env:
     - DOCKER_CLI_EXPERIMENTAL="enabled"
     - secure: "${REGISTRY_SECURE}"
   jobs:
-    - if [ "${TRAVIS_CPU_ARCH}" == "arm64" ]; then TARGET=arm64; fi
+    - TARGET=arm64
     - TARGET=amd64
     - TARGET=ppc64le
         
