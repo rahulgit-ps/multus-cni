@@ -6,6 +6,7 @@ language: go
 dist: bionic
 arch:
   - arm64
+  - amd64
 services:
   - docker
 
@@ -22,7 +23,9 @@ env:
     - DOCKER_CLI_EXPERIMENTAL="enabled"
     - secure: "${REGISTRY_SECURE}"
   jobs:
-    - TARGET=arm64
+    - if [ "${TRAVIS_CPU_ARCH}" == "arm64" ]; then TARGET=arm64; fi
+    - TARGET=amd64
+    - TARGET=ppc64le
         
     
 
@@ -45,9 +48,20 @@ before_script:
 
 script:
   - GOARCH="${TARGET}" ./build
-  - sudo env PATH=${PATH} ./test.sh
-  - goveralls -coverprofile=coverage.out -service=travis-ci
-  - docker build -t nfvperobot/${REPOSITORY_NAME}:latest-arm64 -f Dockerfile.arm64 .
+  - | 
+    if [ "${TARGET}" == "amd64" ]; then
+      sudo env PATH=${PATH} ./test.sh
+      goveralls -coverprofile=coverage.out -service=travis-ci
+      docker build -t ${REPOSITORY_USER}/${REPOSITORY_NAME}:latest-amd64 .
+      docker build -t ${REPOSITORY_USER}/${REPOSITORY_NAME}:latest-ppc64le -f Dockerfile.ppc64le .
+      docker build -t ${REPOSITORY_USER}/${REPOSITORY_NAME}-origin:latest -f Dockerfile.openshift .
+    fi
+  - | 
+    if [ "${TARGET}" == "arm64" ]; then
+      sudo env PATH=${PATH} ./test.sh
+      goveralls -coverprofile=coverage.out -service=travis-ci
+      docker build -t nfvperobot/${REPOSITORY_NAME}:latest-arm64 -f Dockerfile.arm64 .
+    fi
 
 deploy:
   # Release on versioned tag (e.g. v1.0)
